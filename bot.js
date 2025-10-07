@@ -1,4 +1,5 @@
 const { Telegraf } = require('telegraf');
+const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
@@ -11,6 +12,9 @@ const ALLOWED_IDS = [7341387002, 5931611517];
 function isAllowed(userId) {
   return ALLOWED_IDS.includes(userId);
 }
+
+const app = express();
+app.get('/', (req, res) => res.send('Bot is running'));
 
 // Fayl o'qish / yozish
 function readData() {
@@ -188,6 +192,11 @@ bot.on('inline_query', async ctx => {
   await ctx.answerInlineQuery(results, { cache_time: 0 });
 });
 
-bot.launch().then(() => console.log('✅ Bot ishlayapti (pul + hisobot + shablon + inline)'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Web server started on port ${PORT}`);
+  bot.launch().then(() => console.log('✅ Bot ishlayapti (pul + hisobot + shablon + inline)'));
+});
+
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
